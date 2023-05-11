@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Boggle Game</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("form").on("submit", function(event) {
+                event.preventDefault();
+                var guess = $("input[name='guess']").val();
+                $("#result").text("Checking...");
+                
+                axios.post("/guess", {guess: guess})
+                    .then(function(response) {
+                        var result = response.data.result;
+                        if (result === "ok") {
+                            $("#result").text("Valid word!");
+                        } else if (result === "not-on-board") {
+                            $("#result").text("Word not found on the board.");
+                        } else {
+                            $("#result").text("Not a valid word.");
+                        }
+                    })
+                    .catch(function(error) {
+                        $("#result").text("An error occurred.");
+                        console.log(error);
+                    });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Boggle Game</h1>
+    <table>
+        {% for row in board %}
+        <tr>
+            {% for letter in row %}
+            <td>{{ letter }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+    <form>
+        <input type="text" name="guess" required>
+        <input type="submit" value="Submit">
+    </form>
+    <div id="result"></div>
+</body>
+</html>
